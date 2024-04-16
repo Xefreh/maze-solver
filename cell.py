@@ -7,12 +7,12 @@ class Cell:
         self.has_right_wall = True
         self.has_top_wall = True
         self.has_bottom_wall = True
+        self.visited = False
         self._x1 = None
         self._x2 = None
         self._y1 = None
         self._y2 = None
         self._win = win
-        self.visited = False
 
     def draw(self, x1, y1, x2, y2):
         if self._win is None:
@@ -46,36 +46,18 @@ class Cell:
             line = Line(Point(x1, y2), Point(x2, y2))
             self._win.draw_line(line, "white")
 
-    def draw_move(self, to_ceil, undo=False):
-        if self._win is None:
-            return
-        x_mid = (self._x1 + self._x2) / 2
-        y_mid = (self._y1 + self._y2) / 2
+    def draw_move(self, to_cell, undo=False):
+        half_length = abs(self._x2 - self._x1) // 2
+        x_center = half_length + self._x1
+        y_center = half_length + self._y1
 
-        to_x_mid = (to_ceil._x1 + to_ceil._x2) / 2
-        to_y_mid = (to_ceil._y1 + to_ceil._y2) / 2
+        half_length2 = abs(to_cell._x2 - to_cell._x1) // 2
+        x_center2 = half_length2 + to_cell._x1
+        y_center2 = half_length2 + to_cell._y1
 
         fill_color = "red"
         if undo:
             fill_color = "gray"
 
-        if self._x1 > to_ceil._x1:
-            line = Line(Point(self._x1, y_mid), Point(x_mid, y_mid))
-            self._win.draw_line(line, fill_color)
-            line = Line(Point(to_x_mid, to_y_mid), Point(to_ceil._x2, to_y_mid))
-            self._win.draw_line(line, fill_color)
-        elif self._x1 < to_ceil._x1:
-            line = Line(Point(x_mid, y_mid), Point(self._x2, y_mid))
-            self._win.draw_line(line, fill_color)
-            line = Line(Point(to_ceil._x1, to_y_mid), Point(to_x_mid, to_y_mid))
-            self._win.draw_line(line, fill_color)
-        elif self._y1 > to_ceil._y1:
-            line = Line(Point(x_mid, y_mid), Point(x_mid, self._y1))
-            self._win.draw_line(line, fill_color)
-            line = Line(Point(to_x_mid, to_ceil._y2), Point(to_x_mid, to_y_mid))
-            self._win.draw_line(line, fill_color)
-        elif self._y1 < to_ceil._y1:
-            line = Line(Point(x_mid, y_mid), Point(x_mid, self._y2))
-            self._win.draw_line(line, fill_color)
-            line = Line(Point(to_x_mid, to_y_mid), Point(to_x_mid, to_ceil._y1))
-            self._win.draw_line(line, fill_color)
+        line = Line(Point(x_center, y_center), Point(x_center2, y_center2))
+        self._win.draw_line(line, fill_color)

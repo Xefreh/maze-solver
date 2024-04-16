@@ -159,52 +159,47 @@ class Maze:
         return False
     
     def _solve_2(self, i, j):
-        unvisited_neighbors = [(i, j)]
-        prev_cell = None
-        
-        while len(unvisited_neighbors) > 0:
-            oldest_neighbor = unvisited_neighbors.pop(0)
-            i = oldest_neighbor[0]
-            j = oldest_neighbor[1]
+        cells_to_visit = [(i, j)]
+
+        while cells_to_visit:
+            i, j = cells_to_visit.pop(0)
+            if i == self._num_cols - 1 and j == self._num_rows - 1:
+                return True
             
             self._animate()
             self._cells[i][j].visited = True
-
-            if prev_cell != None:
-                self._cells[i][j].draw_move(self._cells[prev_cell[0]][prev_cell[1]])
-
-            if i == self._num_cols - 1 and j == self._num_rows - 1:
-                return True
 
             if (
                 i > 0
                 and not self._cells[i][j].has_left_wall
                 and not self._cells[i - 1][j].visited
             ):
-                unvisited_neighbors.append((i - 1, j))
+                self._cells[i][j].draw_move(self._cells[i - 1][j])
+                cells_to_visit.append((i - 1, j))
 
             if (
                 i < self._num_cols - 1
                 and not self._cells[i][j].has_right_wall
                 and not self._cells[i + 1][j].visited
             ):
-                unvisited_neighbors.append((i + 1, j))
+                self._cells[i][j].draw_move(self._cells[i + 1][j])
+                cells_to_visit.append((i + 1, j))
 
             if (
                 j > 0
                 and not self._cells[i][j].has_top_wall
                 and not self._cells[i][j - 1].visited
             ):
-                unvisited_neighbors.append((i, j - 1))
+                self._cells[i][j].draw_move(self._cells[i][j - 1])
+                cells_to_visit.append((i, j - 1))
 
             if (
                 j < self._num_rows - 1
                 and not self._cells[i][j].has_bottom_wall
                 and not self._cells[i][j + 1].visited
             ):
-                unvisited_neighbors.append((i, j + 1))
-
-            prev_cell = (i, j)
+                self._cells[i][j].draw_move(self._cells[i][j + 1])
+                cells_to_visit.append((i, j + 1))
 
         return False
 
