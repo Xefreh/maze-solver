@@ -104,7 +104,7 @@ class Maze:
             for cell in col:
                 cell.visited = False
 
-    def _solve_r(self, i, j):
+    def _solve_dfs(self, i, j):
         self._animate()
 
         self._cells[i][j].visited = True
@@ -158,7 +158,7 @@ class Maze:
 
         return False
     
-    def _solve_2(self, i, j):
+    def _solve_bfs(self, i, j):
         cells_to_visit = [(i, j)]
 
         while cells_to_visit:
@@ -204,5 +204,5 @@ class Maze:
         return False
 
     def solve(self):
-        # return self._solve_r(0, 0)
-        return self._solve_2(0, 0)
+        # return self._solve_dfs(0, 0)
+        return self._solve_bfs(0, 0)
