@@ -160,13 +160,23 @@ class Maze:
     
     def _solve_bfs(self, i, j):
         cells_to_visit = [(i, j)]
+        came_from = {(i, j): None}
+        path = []
 
         while cells_to_visit:
             i, j = cells_to_visit.pop(0)
             if i == self._num_cols - 1 and j == self._num_rows - 1:
+                while came_from[(i, j)] is not None:
+                    path.append((i, j))
+                    i, j = came_from[(i, j)]
+                path.append((i, j))
+                path.reverse()
+                for k in range(len(path) - 1):
+                    self._animate()
+                    self._cells[path[k][0]][path[k][1]].draw_move(self._cells[path[k + 1][0]][path[k + 1][1]])
+
                 return True
             
-            self._animate()
             self._cells[i][j].visited = True
 
             if (
@@ -174,32 +184,32 @@ class Maze:
                 and not self._cells[i][j].has_left_wall
                 and not self._cells[i - 1][j].visited
             ):
-                self._cells[i][j].draw_move(self._cells[i - 1][j])
                 cells_to_visit.append((i - 1, j))
+                came_from[(i - 1, j)] = (i, j)
 
             if (
                 i < self._num_cols - 1
                 and not self._cells[i][j].has_right_wall
                 and not self._cells[i + 1][j].visited
             ):
-                self._cells[i][j].draw_move(self._cells[i + 1][j])
                 cells_to_visit.append((i + 1, j))
+                came_from[(i + 1, j)] = (i, j)
 
             if (
                 j > 0
                 and not self._cells[i][j].has_top_wall
                 and not self._cells[i][j - 1].visited
             ):
-                self._cells[i][j].draw_move(self._cells[i][j - 1])
                 cells_to_visit.append((i, j - 1))
+                came_from[(i, j - 1)] = (i, j)
 
             if (
                 j < self._num_rows - 1
                 and not self._cells[i][j].has_bottom_wall
                 and not self._cells[i][j + 1].visited
             ):
-                self._cells[i][j].draw_move(self._cells[i][j + 1])
                 cells_to_visit.append((i, j + 1))
+                came_from[(i, j + 1)] = (i, j)
 
         return False
 
