@@ -118,7 +118,7 @@ class Maze:
             and not self._cells[i - 1][j].visited
         ):
             self._cells[i][j].draw_move(self._cells[i - 1][j])
-            if self._solve_r(i - 1, j):
+            if self._solve_dfs(i - 1, j):
                 return True
             else:
                 self._cells[i][j].draw_move(self._cells[i - 1][j], True)
@@ -129,7 +129,7 @@ class Maze:
             and not self._cells[i + 1][j].visited
         ):
             self._cells[i][j].draw_move(self._cells[i + 1][j])
-            if self._solve_r(i + 1, j):
+            if self._solve_dfs(i + 1, j):
                 return True
             else:
                 self._cells[i][j].draw_move(self._cells[i + 1][j], True)
@@ -140,7 +140,7 @@ class Maze:
             and not self._cells[i][j - 1].visited
         ):
             self._cells[i][j].draw_move(self._cells[i][j - 1])
-            if self._solve_r(i, j - 1):
+            if self._solve_dfs(i, j - 1):
                 return True
             else:
                 self._cells[i][j].draw_move(self._cells[i][j - 1], True)
@@ -151,7 +151,7 @@ class Maze:
             and not self._cells[i][j + 1].visited
         ):
             self._cells[i][j].draw_move(self._cells[i][j + 1])
-            if self._solve_r(i, j + 1):
+            if self._solve_dfs(i, j + 1):
                 return True
             else:
                 self._cells[i][j].draw_move(self._cells[i][j + 1], True)
