@@ -1,3 +1,4 @@
+import heapq
 from cell import Cell
 import time
 import random
@@ -164,6 +165,7 @@ class Maze:
 
         while cells_to_visit:
             i, j = cells_to_visit.pop(0)
+
             if i == self._num_cols - 1 and j == self._num_rows - 1:
                 while came_from[(i, j)] is not None:
                     self._animate()
@@ -211,7 +213,71 @@ class Maze:
                 self._cells[i][j].draw_move(self._cells[i][j + 1], True)
 
         return False
+    
+    def _a_star(self, i, j):
+        def h(current, goal):
+            return abs(current[0] - goal[0]) + abs(current[1] - goal[1])
+
+        goal = (self._num_cols - 1, self._num_rows - 1)
+        start = (i, j)
+
+        openSet = []
+        heapq.heappush(openSet, (h(start, goal), start))
+
+        came_from = {}
+        gScore = {start: 0}
+        fScore = {start: h(start, goal)}
+
+        while openSet:
+            self._animate()
+            _, current = heapq.heappop(openSet)
+
+            if current == goal:
+                while current != start:
+                    self._animate()
+                    self._cells[current[0]][current[1]].draw_move(self._cells[came_from[current][0]][came_from[current][1]])
+                    current = came_from[current]
+                return True
+
+            current_i, current_j = current
+            self._cells[current_i][current_j].visited = True
+
+            neighbors = [
+                (current_i - 1, current_j), 
+                (current_i + 1, current_j), 
+                (current_i, current_j - 1), 
+                (current_i, current_j + 1)
+            ]
+
+            for neighbor in neighbors:
+                ni, nj = neighbor
+
+                if 0 <= ni < self._num_cols and 0 <= nj < self._num_rows:
+                    if self._cells[current_i][current_j].has_left_wall and ni == current_i - 1:
+                        continue
+                    if self._cells[current_i][current_j].has_right_wall and ni == current_i + 1:
+                        continue
+                    if self._cells[current_i][current_j].has_top_wall and nj == current_j - 1:
+                        continue
+                    if self._cells[current_i][current_j].has_bottom_wall and nj == current_j + 1:
+                        continue
+
+                    tentative_gScore = gScore[current] + 1
+
+                    if tentative_gScore < gScore.get(neighbor, float('inf')):
+                        came_from[neighbor] = current
+                        gScore[neighbor] = tentative_gScore
+                        fScore[neighbor] = tentative_gScore + h(neighbor, goal)
+
+                        if neighbor not in [item[1] for item in openSet]:
+                            heapq.heappush(openSet, (fScore[neighbor], neighbor))
+                            self._cells[current_i][current_j].draw_move(self._cells[ni][nj], True)
+
+        return False
+
+
 
     def solve(self):
         # return self._solve_dfs(0, 0)
-        return self._solve_bfs(0, 0)
+        # return self._solve_bfs(0, 0)
+        return self._a_star(0, 0)
