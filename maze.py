@@ -159,19 +159,26 @@ class Maze:
 
         return False
     
+    def _reconstruct_path(self, came_from, start, goal):
+        current = goal
+        while current != start:
+            self._animate()
+            self._cells[current[0]][current[1]].draw_move(self._cells[came_from[current][0]][came_from[current][1]])
+            current = came_from[current]
+        return True
+    
     def _solve_bfs(self, i, j):
-        cells_to_visit = [(i, j)]
-        came_from = {(i, j): None}
+        goal = (self._num_cols - 1, self._num_rows - 1)
+        start = (i, j)
+
+        cells_to_visit = [start]
+        came_from = {start: None}
 
         while cells_to_visit:
             i, j = cells_to_visit.pop(0)
 
-            if i == self._num_cols - 1 and j == self._num_rows - 1:
-                while came_from[(i, j)] is not None:
-                    self._animate()
-                    self._cells[i][j].draw_move(self._cells[came_from[(i, j)][0]][came_from[(i, j)][1]])
-                    i, j = came_from[(i, j)]
-                return True
+            if start == goal:
+                return self._reconstruct_path(came_from, start, goal)
             
             self._animate()
             self._cells[i][j].visited = True
@@ -233,11 +240,7 @@ class Maze:
             _, current = heapq.heappop(openSet)
 
             if current == goal:
-                while current != start:
-                    self._animate()
-                    self._cells[current[0]][current[1]].draw_move(self._cells[came_from[current][0]][came_from[current][1]])
-                    current = came_from[current]
-                return True
+                return self._reconstruct_path(came_from, start, goal)
 
             current_i, current_j = current
             self._cells[current_i][current_j].visited = True
